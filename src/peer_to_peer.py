@@ -50,12 +50,10 @@ class ProcessDetection:
         self._cf.disconnected.add_callback(self._disconnected)
         self._cf.connection_failed.add_callback(self._connection_failed)
         self._cf.connection_lost.add_callback(self._connection_lost)
-
         self._cf.appchannel.packet_received.add_callback(self._app_packet_received)
 
-        self._cf.open_link(link_uri)
-
         print('Connecting to %s' % link_uri)
+        self._cf.open_link(link_uri)
 
     def _connected(self, link_uri):
         """ This callback is called form the Crazyflie API when a Crazyflie
@@ -63,7 +61,8 @@ class ProcessDetection:
 
         # Start a separate thread to do the motor test.
         # Do not hijack the calling thread!
-        Thread(target=self._test_appchannel).start()
+        # Thread(target=self._test_appchannel).start()
+        print('Connected to %s' % link_uri)
 
     def _connection_failed(self, link_uri, msg):
         """Callback when connection initial connection fails (i.e no Crazyflie
@@ -80,20 +79,20 @@ class ProcessDetection:
         print('Disconnected from %s' % link_uri)
 
     def _app_packet_received(self, data):
-        (sum, ) = struct.unpack("<f", data)
-        print(f"Received sum: {sum}")
+        #  struct SendPacket
+        # {
+        #   uint8_t id;
+        #   uint8_t rssi;
+        #   uint8_t class;
+        #   float confidence;
+        #   float x;
+        #   float y;
+        #   float z;
+        # } __attribute__((packed));
 
-    # def _test_appchannel(self):
-    #     for i in range(10):
-    #         (x, y, z) = (i, i+1, i+2)
-    #         data = struct.pack("<fff", x, y, z)
-    #         self._cf.appchannel.send_packet(data)
-    #         print(f"Sent x: {x}, y: {y}, z: {z}")
+        id, rssi, objClass, confidence, x, y, z = struct.unpack("<BBBffff", data)
 
-    #         time.sleep(1)
-
-    #     self._cf.close_link()
-
+        print(f"[Recv] ID: {id}, RSSI: -{rssi}, Class: {objClass}, Confidence: {confidence}, Pos: [{x}, {y}, {z}]")
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
