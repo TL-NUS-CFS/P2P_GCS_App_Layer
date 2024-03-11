@@ -1,0 +1,8 @@
+bin/*
+cf2.*
+version.c
+*.o
+.*.o.cmd
+.*.o.d
+build
+.vscode
