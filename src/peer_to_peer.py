@@ -32,11 +32,11 @@ DRONE_ID_MAX = 25
 # Other config
 LOCATION_THRESHOLD = 1.0
 
-# Coordinates in ENU: https://www.bitcraze.io/documentation/system/platform/cf2-coordinate-system/
+# Coordinates seem to be in NWU
 CF_OFFSETS = {
     0: [0, 0],
     1: [1, 0],
-    18: [2, 0]
+    18: [0, 2]
 }
 
 class ProcessDetection(Node):
@@ -69,10 +69,6 @@ class ProcessDetection(Node):
     def _connected(self, link_uri):
         """ This callback is called form the Crazyflie API when a Crazyflie
         has been connected and the TOCs have been downloaded."""
-
-        # Start a separate thread to do the motor test.
-        # Do not hijack the calling thread!
-        # Thread(target=self._test_appchannel).start()
         print('Connected to %s' % link_uri)
 
     def _connection_failed(self, link_uri, msg):
